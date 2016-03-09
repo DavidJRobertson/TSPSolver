@@ -25,11 +25,11 @@ public class AntSolver {
     /** Evaporation factor */
     public double p_evap      =  0.5;
 
-    /** Best route coefficient */
-    public double p_brc       =  0;//.15;
-
     /** Ant factor (number of ants as a fraction of number of no. of cities) */
     public double p_antfac    =  0.8;
+
+    /** Trail deposition coefficient */
+    public double p_q = 500.0;
 
 
     //// Private variables ////
@@ -38,7 +38,6 @@ public class AntSolver {
     private double         trail[][]; // Pheromone trail matrix
     private int            bestTour[];
     private double         bestTourCost = Double.MAX_VALUE;
-    private double         avgTourCost = 0.0;
     private Random         random = new Random();
     private int            cycle = 0;
 
@@ -67,9 +66,14 @@ public class AntSolver {
             tabu[startingCity] = true;
         }
 
-        public void move() {
+        public void doTour() {
+            for (int i = tourIndex-1; i < tsp.size()-1; i++) {
+                move();
+            }
+        }
+        private void move() {
             // Calculate the probability of visiting each city
-            int currentCity = tour[tourIndex];
+            int currentCity = tour[tourIndex-1];
             double probability[] = new double[tsp.size()];
             double sum = 0.0;
             for (int city = 0; city < tsp.size(); city++) {
@@ -89,11 +93,11 @@ public class AntSolver {
 
             // Then choose which city based on these probabilities
             int destCity = 0;
-            double p = random.nextFloat();
+            double p = random.nextDouble();
             double cumulativeProbability = 0.0;
             for (int city = 0; city < tsp.size(); city++) {
                 cumulativeProbability += probability[city];
-                if (p <= cumulativeProbability) {
+                if (cumulativeProbability >= p) {
                     destCity = city;
                     break;
                 }
@@ -126,7 +130,7 @@ public class AntSolver {
     public void solveInit() {
         cycle = 0;
 
-        // Clear trail
+        // Clear trails
         for (int i = 0; i < tsp.size(); i++) {
             for (int j = 0; j < tsp.size(); j++) {
                 trail[i][j] = p_initTrail;
@@ -175,18 +179,8 @@ public class AntSolver {
 
     private void doAntTours() {
         // Move all ants until they've all completed a full tour
-        for (int i = 0; i < tsp.size()-1; i++) {
-            for (Ant ant : ants) {
-                ant.move();
-            }
-        }
-
-        // Update the average tour cost
         for (Ant ant : ants) {
-            double tourCost = ant.getTourCost();
-            if (avgTourCost == 0.0) { avgTourCost = tourCost; }
-            avgTourCost += tourCost;
-            avgTourCost /= 2;
+            ant.doTour();
         }
     }
 
@@ -202,22 +196,23 @@ public class AntSolver {
     private void applyAntPheromoneTrail() {
         // Ant path contribution to pheromone trail
         for (Ant ant : ants) {
-            double contribution = avgTourCost/ant.getTourCost(); //p_tdc / ant.getTourCost();
+            double contribution = p_q/ant.getTourCost(); //p_tdc / ant.getTourCost();
             depositTrail(ant.tour, contribution);
         }
 
         // Apply extra pheromone to best route
-        if (bestTour != null && p_brc > 0) {
-            depositTrail(bestTour, p_brc * ants.size() * avgTourCost/bestTourCost);
-        }
+        //if (bestTour != null && p_brc > 0) {
+        //    depositTrail(bestTour, p_brc * ants.size() * p_q/bestTourCost);
+        //}
     }
 
     private void depositTrail(int[] tour, double amount) {
         for (int i = 0; i < tsp.size()-1; i++) {
             trail[tour[i]][tour[i+1]] += amount;
-            trail[tour[i+1]][tour[i]] += amount;
+            //trail[tour[i+1]][tour[i]] += amount; // TODO: should this be symmetric?
         }
         trail[tour[tsp.size()-1]][tour[0]] += amount;
+        //trail[tour[0]][tour[tsp.size()-1]] += amount;
     }
 
     private void updateBestTour() {
@@ -226,12 +221,12 @@ public class AntSolver {
             if (ant.getTourCost() < bestTourCost) {
                 bestTourCost = ant.getTourCost();
                 bestTour     = ant.tour.clone();
+
+                System.out.print(bestTourCost);
+                System.out.print(" -> ");
+                System.out.println(Arrays.toString(bestTour));
             }
         }
-
-        System.out.print(bestTourCost);
-        System.out.print(" -> ");
-        System.out.println(Arrays.toString(bestTour));
     }
 
 
@@ -239,10 +234,11 @@ public class AntSolver {
     // Fast approximate pow
     // See http://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
     private static double pow(final double a, final double b) {
-        final long tmp = Double.doubleToLongBits(a);
+        final long tmp  = Double.doubleToLongBits(a);
         final long tmp2 = (long)(b * (tmp - 4606921280493453312L)) + 4606921280493453312L;
         return Double.longBitsToDouble(tmp2);
     }
+
 
 
 

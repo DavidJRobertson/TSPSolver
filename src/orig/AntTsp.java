@@ -181,6 +181,7 @@ public class AntTsp {
     // totally randomly (taking into account tabu list).
     private int selectNextTown(Ant ant) {
         // sometimes just randomly select
+        /*
         if (rand.nextDouble() < pr) {
             int t = rand.nextInt(n - currentIndex); // random town
             int j = -1;
@@ -192,6 +193,7 @@ public class AntTsp {
             }
 
         }
+        */
         // calculate probabilities for each town (stored in probs)
         probTo(ant);
         // randomly select according to probs
@@ -279,7 +281,7 @@ public class AntTsp {
             updateTrails();
             updateBest();
             iteration++;
-            System.out.println(iteration + " " + bestTourLength + " " -+ tourToString(bestTour));
+            System.out.println(iteration + " " + bestTourLength + " " + tourToString(bestTour));
         }
         // Subtract n because we added one to edges on load
         System.out.println("Best tour length: " + (bestTourLength - n));
