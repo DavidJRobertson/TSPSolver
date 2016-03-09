@@ -30,7 +30,7 @@ public class AntSolver {
     public double p_antfac    =  0.4;
 
     /** Trail deposition coefficient */
-    public double p_tdc = 500.0;
+    public double p_tdc = 800.0;
 
     /** Best route coefficient */
     public double p_brc = 0.4;
@@ -175,9 +175,8 @@ public class AntSolver {
 
         // Place ants on cities randomly
         ants = new ArrayList<>();
-        for (int k = 0; k < numAnts; k++) {
-            Ant ant = new Ant(tsp, trail);
-            ants.add(ant);
+        for (int i = 0; i < numAnts; i++) {
+            ants.add(new Ant(tsp, trail););
         }
     }
 
