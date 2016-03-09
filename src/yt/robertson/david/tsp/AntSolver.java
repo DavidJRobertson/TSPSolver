@@ -29,7 +29,10 @@ public class AntSolver {
     public double p_antfac    =  0.8;
 
     /** Trail deposition coefficient */
-    public double p_q = 500.0;
+    public double p_tdc = 500.0;
+
+    /** Best route coefficient */
+    public double p_brc = 0.4;
 
 
     //// Private variables ////
@@ -196,23 +199,37 @@ public class AntSolver {
     private void applyAntPheromoneTrail() {
         // Ant path contribution to pheromone trail
         for (Ant ant : ants) {
-            double contribution = p_q/ant.getTourCost(); //p_tdc / ant.getTourCost();
+            double contribution = p_tdc/ant.getTourCost();
             depositTrail(ant.tour, contribution);
         }
 
         // Apply extra pheromone to best route
-        //if (bestTour != null && p_brc > 0) {
-        //    depositTrail(bestTour, p_brc * ants.size() * p_q/bestTourCost);
-        //}
+        if (bestTour != null && p_brc > 0) {
+            depositTrail(bestTour, p_brc * ants.size() * p_tdc/bestTourCost);
+        }
     }
 
+    /**
+     * Symmetrically deposit trail on an edge
+     * @param i First city index
+     * @param j Second city index
+     * @param amount of trail to deposit
+     */
+    private void depositEdgeTrail(int i, int j, double amount) {
+        trail[i][j] += amount;
+        trail[j][i] += amount;
+    }
+    /**
+     * Deposit trail on an entire tour
+     * @param tour The tour to deposit trail on
+     * @param amount of trail to deposit
+     */
     private void depositTrail(int[] tour, double amount) {
         for (int i = 0; i < tsp.size()-1; i++) {
-            trail[tour[i]][tour[i+1]] += amount;
-            //trail[tour[i+1]][tour[i]] += amount; // TODO: should this be symmetric?
+            depositEdgeTrail(tour[i], tour[i+1], amount);
+
         }
-        trail[tour[tsp.size()-1]][tour[0]] += amount;
-        //trail[tour[0]][tour[tsp.size()-1]] += amount;
+        depositEdgeTrail(Trail(tour[tsp.size()-1], tour[0], amount);
     }
 
     private void updateBestTour() {
