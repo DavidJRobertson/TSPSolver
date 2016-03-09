@@ -6,27 +6,28 @@ import java.io.*;
 
 /**
  * Solves a TSP using a simulated ant colony
- * @see <a href="http://www.agent.ai/doc/upload/200302/dori96.pdf">The Ant System: Optimization by a colony of cooperating agents</a>
- * @see <a href="https://github.com/lukedodd/ant-tsp/blob/master/AntTsp.java">Luke Dodd's implementation of the previous algorithm</a>
+ * @see . Based on the algorithm described in <a href="http://www.agent.ai/doc/upload/200302/dori96.pdf">The Ant System: Optimization by a colony of cooperating agents</a>
  *
  * @author David Robertson
  */
 public class AntSolver {
     //// Algorithm Parameters ////
+    // Note: the quality of the result is highly dependent on these values- tweak away.
+
     /** Initial trail value (c) */
     public double p_initTrail =  1.0;
 
     /** Pheromone trail weight */
-    public double p_alpha     =  1.0;
+    public double p_alpha     =  0.99;
 
-    /** Inverse distance weight [not sure if this should be negative or not] */
-    public double p_beta      =  5.0;
+    /** Inverse distance weight */
+    public double p_beta      =  4.75;
 
     /** Evaporation factor */
-    public double p_evap      =  0.5;
+    public double p_evap      =  0.45;
 
     /** Ant factor (number of ants as a fraction of number of no. of cities) */
-    public double p_antfac    =  0.8;
+    public double p_antfac    =  0.4;
 
     /** Trail deposition coefficient */
     public double p_tdc = 500.0;
@@ -182,9 +183,7 @@ public class AntSolver {
 
     private void doAntTours() {
         // Move all ants until they've all completed a full tour
-        for (Ant ant : ants) {
-            ant.doTour();
-        }
+        ants.parallelStream().forEach(Ant::doTour);
     }
 
     private void doPheromoneTrailEvaporation() {
@@ -229,7 +228,7 @@ public class AntSolver {
             depositEdgeTrail(tour[i], tour[i+1], amount);
 
         }
-        depositEdgeTrail(Trail(tour[tsp.size()-1], tour[0], amount);
+        depositEdgeTrail(tour[tsp.size()-1], tour[0], amount);
     }
 
     private void updateBestTour() {

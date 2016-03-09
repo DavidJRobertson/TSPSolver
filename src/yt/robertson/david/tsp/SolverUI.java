@@ -53,8 +53,9 @@ public class SolverUI {
         for (int i = 0; i < tsp.size(); i++) {
             for (int j = i+1; j < tsp.size(); j++) {
                 double trailVal = solver.getTrail(i, j);
-                if (trailVal > 0) {
-                    StdDraw.setPenColor(new Color(1.0f, 1.0f, 0.0f, (float) (trailVal/maxTrailVal)));
+                float opacity = (float) (trailVal/maxTrailVal);
+                if (opacity > 0.025) {
+                    StdDraw.setPenColor(new Color(1.0f, 1.0f, 0.0f, opacity));
                     drawEdge(i, j);
                 }
             }
@@ -75,10 +76,10 @@ public class SolverUI {
         }
 
         // Draw cities
-        StdDraw.setPenColor(StdDraw.BLACK);
-        for (TSP.City city : tsp.getCities()) {
-            StdDraw.circle(city.x, city.y, pointSize);
-        }
+        //StdDraw.setPenColor(StdDraw.BLACK);
+        //for (TSP.City city : tsp.getCities()) {
+        //    StdDraw.circle(city.x, city.y, pointSize);
+        //}
 
         // Finally, display all in the window
         StdDraw.show(0);
@@ -90,10 +91,20 @@ public class SolverUI {
         solver.solveInit();
         while (solver.getCycle() < maxCycles) {
             solver.solveCycle();
-            plot();
+
+            if (solver.getCycle() % 10 == 0) {
+                plot();
+            }
+
+            if (solver.getCycle() % 50 == 0) {
+                int cost = (int) tsp.cost(solver.getBestTour());
+                if (cost < 12500) {
+                    solver.saveBestTour("best." + cost + ".tour");
+                }
+            }
         }
 
-        solver.saveBestTour("best.tour");
+        solver.saveBestTour("best."+((int)tsp.cost(solver.getBestTour()))+".tour");
     }
 
     ///////////////////////////////////////////////////////////
