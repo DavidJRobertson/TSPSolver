@@ -20,8 +20,6 @@
  *
  *************************************************************************/
 
-package stddraw;
-
 import java.io.*;
 import java.net.*;
 import java.awt.*;
@@ -735,7 +733,7 @@ public final class StdDraw implements ActionListener, MouseListener, MouseMotion
 
     /**
      * Write the given text string in the current font, centered on (x, y) and
-     * rotated by the specified number of degrees  
+     * rotated by the specified number of degrees
      * @param x the center x-coordinate of the text
      * @param y the center y-coordinate of the text
      * @param s the text

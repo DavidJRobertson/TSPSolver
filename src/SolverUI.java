@@ -1,4 +1,3 @@
-import stddraw.StdDraw;
 import java.awt.*;
 import java.io.IOException;
 
