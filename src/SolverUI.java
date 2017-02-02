@@ -1,5 +1,3 @@
-package yt.robertson.david.tsp;
-
 import stddraw.StdDraw;
 import java.awt.*;
 import java.io.IOException;

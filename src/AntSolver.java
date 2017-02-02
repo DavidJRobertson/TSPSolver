@@ -1,5 +1,3 @@
-package yt.robertson.david.tsp;
-
 import java.util.*;
 import java.io.*;
 

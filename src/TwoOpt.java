@@ -1,5 +1,3 @@
-package yt.robertson.david.tsp;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
