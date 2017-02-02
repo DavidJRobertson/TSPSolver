@@ -176,7 +176,7 @@ public class AntSolver {
         // Place ants on cities randomly
         ants = new ArrayList<>();
         for (int i = 0; i < numAnts; i++) {
-            ants.add(new Ant(tsp, trail););
+            ants.add(new Ant(tsp, trail));
         }
     }
 
